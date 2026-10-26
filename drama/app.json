@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "youdrama",
+  "name": "You Drama",
+  "logo": "./assets/youdrama.png",
+  "theme": {
+    "gradient": {
+      "angle": 131.889807,
+      "stops": [
+        {
+          "color": "#FF5F10",
+          "position": 0
+        },
+        {
+          "color": "#FF821D",
+          "position": 0.6490201354026794
+        },
+        {
+          "color": "#FF9513",
+          "position": 1
+        }
+      ]
+    },
+    "textColor": "#FFFFFF"
+  },
+  "labels": {
+    "open": "Open",
+    "continue": "Continue Watching"
+  },
+  "stores": {
+    "android": "https://play.google.com/store/apps/details?id=you.drama.shorts",
+    "ios": "https://apps.apple.com/us/app/youdrama-short-dramas-tv/id6751262251"
+  },
+  "attribution": {
+    "enabled": false,
+    "pixelId": "",
+    "adjustToken": "",
+    "extraParams": {},
+    "clickEvent": "StartButtonClick"
+  }
+}
