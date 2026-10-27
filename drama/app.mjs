@@ -1,7 +1,7 @@
 import {startAttribution,trackStoreClick} from './landing-attribution.mjs';
 import {loadDetail} from './detail.mjs';
 import {validateAppConfig} from './app-config.mjs';
-import {devicePlatform,storeDestination} from './navigation.mjs';
+import {devicePlatform,createStoreNavigator} from './navigation.mjs';
 
 const byTestId = id => document.querySelector(`[data-testid="${id}"]`);
 const byAction = action => document.querySelector(`[data-action="${action}"]`);
@@ -20,23 +20,21 @@ new ResizeObserver(updateSynopsisFade).observe(synopsis);
 const previewMode = document.querySelector('meta[name="preview-mode"]').content === 'true';
 const endpoint = document.querySelector('meta[name="detail-endpoint"]').content;
 
+const launchStore = createStoreNavigator(window);
 let appConfig;
-let destinationMessage = '';
 
 function setState(state, message = '') {
   document.body.dataset.state = state;
   status.textContent = message;
 }
 
-function navigate(platform) {
-  const destination=storeDestination(appConfig.stores,platform,window.location.search);
-  if(destination) window.location.assign(destination);
-  else status.textContent=`${platform==='ios'?'App Store':'Google Play'} is not available yet.`;
+function navigate(detectedPlatform) {
+  launchStore(appConfig.stores,detectedPlatform,window.location.search);
 }
 function openStore(position) {
-  const platform = devicePlatform(navigator) ?? 'android';
-  trackStoreClick(position, appConfig.id, platform);
-  navigate(platform);
+  const detectedPlatform = devicePlatform(navigator);
+  trackStoreClick(position, appConfig.id, detectedPlatform ?? 'android');
+  navigate(detectedPlatform);
 }
 
 function applyAppConfig(config) {
@@ -63,7 +61,6 @@ function applyAppConfig(config) {
     const action=byAction(name);action.disabled=false;action.removeAttribute('aria-disabled');action.onclick=()=>openStore(name);
   }
   document.querySelector('.continue-button .play-icon').style.backgroundColor=appConfig.theme.textColor;
-  destinationMessage='';
   byTestId('preview-marker').hidden = !previewMode;
 }
 
@@ -117,7 +114,7 @@ function showDetail(result) {
     tags.append(tag);
   }
   bindCover(result.drama);
-  setState('ready', destinationMessage);
+  setState('ready');
   updateSynopsisFade();
 }
 
@@ -134,14 +131,13 @@ function showResult(result) {
   byTestId('drama-tags').replaceChildren();
   setCoverPlaceholder(result.state === 'missing' ? 'Add a drama ID to show its cover' : 'Cover unavailable');
   retryButton.hidden = result.state !== 'error';
-  const message = detailMessage => [detailMessage, destinationMessage].filter(Boolean).join(' ');
 
   if (result.state === 'missing') {
-    setState('missing', message('Add platform_id to load this drama.'));
+    setState('missing', 'Add platform_id to load this drama.');
   } else if (result.state === 'not-found') {
-    setState('not-found', message('Drama not found.'));
+    setState('not-found', 'Drama not found.');
   } else {
-    setState('error', message('Could not load drama details. Retry to try again.'));
+    setState('error', 'Could not load drama details. Retry to try again.');
   }
 }
 
