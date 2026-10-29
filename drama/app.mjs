@@ -133,7 +133,7 @@ function showResult(result) {
   retryButton.hidden = result.state !== 'error';
 
   if (result.state === 'missing') {
-    setState('missing', 'Add platform_id to load this drama.');
+    setState('missing', 'Add drama_id (for example 999999-self) to load this drama.');
   } else if (result.state === 'not-found') {
     setState('not-found', 'Drama not found.');
   } else {

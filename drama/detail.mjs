@@ -42,17 +42,18 @@ function requestEndpoint(endpoint) {
 
 export async function loadDetail(search = '', {fetchImpl = globalThis.fetch, endpoint = DETAIL_ENDPOINT} = {}) {
   const params = new URLSearchParams(typeof search === 'string' ? search : search.toString());
-  const platform = params.get('platform') ?? 'self';
-  const platformId = params.get('platform_id');
+  const dramaId = params.get('drama_id');
+  const platformId = dramaId?.endsWith('-self') ? dramaId.slice(0, -5) : '';
   const language = params.get('language') ?? 'en';
 
-  if (platform !== 'self' || platformId === null || platformId.trim() === '') {
-    return unavailable('missing', platform !== 'self' ? 'unsupported-platform' : 'missing-platform-id');
+  if (platformId.trim() === '') {
+    return unavailable('missing', 'missing-drama-id');
   }
 
+  // Public drama_id (for example 999999-self) maps to the existing detail API.
   const url = requestEndpoint(endpoint);
   url.search = '';
-  url.searchParams.set('platform', platform);
+  url.searchParams.set('platform', 'self');
   url.searchParams.set('platform_id', platformId);
   url.searchParams.set('language', language);
 
